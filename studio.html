@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SEO — Replace with your studio details
+       ═══════════════════════════════════════════════════════════ -->
+  <title>[STUDIO_NAME] — Visual Atelier</title>
+  <meta name="description" content="[STUDIO_TAGLINE] | [CITY], Indonesia" />
+  <meta name="keywords"    content="photography studio, [CITY], wedding, portrait, commercial" />
+  <meta property="og:title"       content="[STUDIO_NAME] — Visual Atelier" />
+  <meta property="og:description" content="[STUDIO_TAGLINE]" />
+  <meta property="og:image"       content="[OG_IMAGE_URL]" />
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FONTS
+       Display  : Bebas Neue   — impact headlines
+       Serif    : DM Serif Display — editorial subheadings
+       Body     : DM Sans       — clean readable body
+       Mono     : JetBrains Mono — labels / counters
+       ═══════════════════════════════════════════════════════════ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════
+       TAILWIND THEME
+       ─────────────────────────────────────────────────────────
+       PRIMARY COLORS — Edit here to rebrand
+         --bg           : #FFFFFF  (page background)
+         --text         : #0F172A  (primary text)
+         --subtle       : #64748B  (muted / borders)
+         --ink          : #000000  (buttons / strong elements)
+         --paper        : #F8F8F6  (off-white sections)
+       ═══════════════════════════════════════════════════════════ */
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ink:      '#000000',
+            page:     '#FFFFFF',
+            text:     '#0F172A',
+            subtle:   '#64748B',
+            paper:    '#F8F8F6',
+            'subtle-line': 'rgba(100,116,139,0.18)',
+          },
+          fontFamily: {
+            display: ['"Bebas Neue"', 'Impact', 'sans-serif'],
+            serif:   ['"DM Serif Display"', 'Georgia', 'serif'],
+            sans:    ['"DM Sans"', 'sans-serif'],
+            mono:    ['"JetBrains Mono"', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       CSS CUSTOM PROPERTIES — Single source of truth
+       ═══════════════════════════════════════════════════════════ */
+    :root {
+      --bg:        #FFFFFF;
+      --text:      #0F172A;
+      --subtle:    #64748B;
+      --ink:       #000000;
+      --paper:     #F8F8F6;
+      --line:      rgba(100,116,139,0.18);
+      --font-disp: 'Bebas Neue', Impact, sans-serif;
+      --font-ser:  'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ─── CUSTOM CURSOR ─────────────────────────────────────── */
+    #c-dot {
+      width: 6px; height: 6px;
+      background: var(--ink);
+      border-radius: 50%;
+      position: fixed; z-index: 9999;
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: transform 0.08s linear, background 0.2s;
+      top: 0; left: 0;
+    }
+    #c-ring {
+      width: 32px; height: 32px;
+      border: 1px solid var(--ink);
+      border-radius: 50%;
+      position: fixed; z-index: 9998;
+      pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: transform 0.22s ease, width 0.3s ease, height 0.3s ease, border-color 0.3s, opacity 0.3s;
+      top: 0; left: 0; opacity: 0.5;
+    }
+    body.cursor-img #c-ring {
+      width: 80px; height: 80px;
+      border-color: var(--ink);
+      opacity: 0.18;
+      mix-blend-mode: multiply;
+    }
+    body.cursor-img #c-dot { background: transparent; }
+
+    /* ─── PAGE LOADER ───────────────────────────────────────── */
+    #loader {
+      position: fixed; inset: 0; z-index: 10000;
+      background: var(--ink);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 2.5rem;
+      transition: opacity 0.9s ease, visibility 0.9s ease;
+    }
+    #loader.out { opacity: 0; visibility: hidden; }
+    .loader-name {
+      font-family: var(--font-disp);
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      color: #fff;
+      letter-spacing: 0.3em;
+      animation: loaderSlide 0.7s ease forwards;
+    }
+    .loader-sub {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.45em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      animation: loaderSlide 0.7s ease 0.15s both;
+    }
+    .loader-track {
+      width: 160px; height: 1px;
+      background: rgba(255,255,255,0.12);
+      overflow: hidden;
+      animation: loaderSlide 0.7s ease 0.25s both;
+    }
+    .loader-fill {
+      height: 100%; width: 0; background: #fff;
+      animation: loaderFill 1.6s cubic-bezier(0.77,0,0.18,1) 0.4s forwards;
+    }
+    @keyframes loaderSlide {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+    @keyframes loaderFill { to { width: 100%; } }
+
+    /* ─── NAVBAR ────────────────────────────────────────────── */
+    #nav {
+      position: fixed; inset: 0 0 auto 0;
+      z-index: 200;
+      padding: 0 2.5rem;
+      height: 70px;
+      display: flex; align-items: center; justify-content: space-between;
+      transition: background 0.4s, backdrop-filter 0.4s, box-shadow 0.4s;
+    }
+    #nav.solid {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(16px) saturate(180%);
+      -webkit-backdrop-filter: blur(16px) saturate(180%);
+      box-shadow: 0 1px 0 var(--line);
+    }
+    .nav-logo {
+      font-family: var(--font-disp);
+      font-size: 1.5rem;
+      letter-spacing: 0.18em;
+      color: var(--ink);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    #nav:not(.solid) .nav-logo { color: #fff; }
+    .nav-link {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      text-decoration: none;
+      position: relative;
+      transition: color 0.25s;
+    }
+    #nav:not(.solid) .nav-link { color: rgba(255,255,255,0.6); }
+    .nav-link::after {
+      content:''; position:absolute; bottom:-2px; left:0; width:0; height:1px;
+      background: currentColor;
+      transition: width 0.3s;
+    }
+    .nav-link:hover::after { width:100%; }
+    .nav-link:hover { color: var(--ink); }
+    #nav:not(.solid) .nav-link:hover { color: #fff; }
+
+    .lang-pill {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.28rem 0.7rem;
+      border: 1px solid var(--line);
+      border-radius: 1px;
+      cursor: pointer; background: transparent;
+      color: var(--subtle);
+      transition: all 0.25s;
+    }
+    .lang-pill.on {
+      background: var(--ink); border-color: var(--ink); color: #fff;
+    }
+    #nav:not(.solid) .lang-pill { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.5); }
+    #nav:not(.solid) .lang-pill.on { background:#fff; color:var(--ink); border-color:#fff; }
+
+    .btn-book {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.65rem 1.4rem;
+      background: var(--ink); color: #fff;
+      border: 1px solid var(--ink);
+      border-radius: 1px;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.3s, color 0.3s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-book:hover { background: transparent; color: var(--ink); }
+    #nav:not(.solid) .btn-book {
+      background: #fff; color: var(--ink); border-color: #fff;
+    }
+    #nav:not(.solid) .btn-book:hover { background: transparent; color: #fff; }
+
+    /* ─── MOBILE MENU ───────────────────────────────────────── */
+    #mob-menu {
+      position: fixed; inset: 0; z-index: 180;
+      background: var(--ink);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3rem;
+      transform: translateY(-100%);
+      transition: transform 0.55s cubic-bezier(0.77,0,0.18,1);
+    }
+    #mob-menu.open { transform: translateY(0); }
+    .mob-link {
+      font-family: var(--font-disp);
+      font-size: clamp(2.2rem,6vw,3.5rem);
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.25s;
+    }
+    .mob-link:hover { color: #fff; }
+
+    /* Hamburger */
+    .ham { display:flex; flex-direction:column; gap:5px; cursor:pointer; z-index:190; }
+    .ham span {
+      display:block; width:24px; height:1px;
+      background: var(--ink);
+      transition: all 0.35s;
+    }
+    #nav:not(.solid) .ham span { background: #fff; }
+    .ham.x span:nth-child(1) { transform: rotate(45deg) translate(4px,4px); background:#fff; }
+    .ham.x span:nth-child(2) { opacity:0; }
+    .ham.x span:nth-child(3) { transform: rotate(-45deg) translate(4px,-4px); background:#fff; }
+
+    /* ─── HERO SPLIT ────────────────────────────────────────── */
+    #hero {
+      min-height: 100svh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+    }
+    @media (max-width:768px) {
+      #hero { grid-template-columns: 1fr; }
+      .hero-text-side { min-height: 50vh; padding-top: 90px; }
+    }
+    .hero-text-side {
+      background: var(--ink);
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 4rem 3rem 4rem 3.5rem;
+      position: relative; overflow: hidden;
+    }
+    /* thin vertical rule */
+    .hero-text-side::before {
+      content:'';
+      position:absolute; right:0; top:15%; bottom:15%; width:1px;
+      background: rgba(255,255,255,0.08);
+    }
+    .hero-num {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.35em; color: rgba(255,255,255,0.25);
+      margin-bottom: 2.5rem;
+    }
+    .hero-headline {
+      font-family: var(--font-disp);
+      font-size: clamp(4rem, 9vw, 8.5rem);
+      line-height: 0.92;
+      color: #fff;
+      letter-spacing: 0.02em;
+    }
+    .hero-headline em {
+      display: block;
+      font-family: var(--font-ser);
+      font-style: italic;
+      font-size: clamp(2.2rem, 5vw, 4.5rem);
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.45);
+    }
+    .hero-desc {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.8;
+      max-width: 360px;
+      margin-top: 2.5rem;
+    }
+    .hero-cta-row {
+      display: flex; flex-wrap: wrap; gap: 1rem;
+      margin-top: 3rem;
+      align-items: center;
+    }
+    .btn-light {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.85rem 1.8rem;
+      background: #fff; color: var(--ink);
+      border: 1px solid #fff;
+      border-radius: 1px;
+      cursor: pointer; text-decoration: none;
+      transition: background 0.3s, color 0.3s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-light:hover { background: transparent; color: #fff; }
+    .btn-ghost {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      padding: 0.85rem 1.8rem;
+      background: transparent; color: rgba(255,255,255,0.55);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 1px;
+      cursor: pointer; text-decoration: none;
+      transition: border-color 0.3s, color 0.3s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.6); color:#fff; }
+
+    /* Hero Image Side */
+    .hero-img-side {
+      position: relative; overflow: hidden;
+    }
+    .hero-img-side img {
+      width:100%; height:100%; object-fit:cover;
+      transition: transform 12s ease;
+    }
+    .hero-img-side:hover img { transform: scale(1.04); }
+    .hero-img-overlay {
+      position: absolute; inset:0;
+      background: linear-gradient(180deg,rgba(15,23,42,0.1) 0%,rgba(15,23,42,0.35) 100%);
+    }
+    .hero-img-tag {
+      position: absolute; bottom: 2.5rem; right: 2rem;
+      font-family: var(--font-mono); font-size: 0.55rem;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      writing-mode: vertical-lr;
+    }
+
+    /* ─── SCROLL DOWN ───────────────────────────────────────── */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 3.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      z-index: 2;
+    }
+    .scroll-hint span {
+      font-family: var(--font-mono); font-size: 0.52rem;
+      letter-spacing: 0.35em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+    .scroll-line {
+      width: 1px; height: 48px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%,100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* ─── SECTION TYPOGRAPHY ────────────────────────────────── */
+    .sec-label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem; letter-spacing: 0.38em;
+      text-transform: uppercase; color: var(--subtle);
+    }
+    .sec-title {
+      font-family: var(--font-disp);
+      font-size: clamp(2.8rem, 5vw, 5rem);
+      line-height: 1; letter-spacing: 0.03em;
+      color: var(--ink);
+    }
+    .sec-title-white { color: #fff; }
+    .sec-serif {
+      font-family: var(--font-ser);
+      font-style: italic;
+      font-size: clamp(1.4rem, 2.5vw, 2rem);
+      color: var(--subtle);
+      font-weight: 400;
+    }
+    .rule { width: 40px; height: 1px; background: var(--ink); }
+    .rule-white { background: rgba(255,255,255,0.3); }
+
+    /* ─── ACHIEVEMENT GRID ──────────────────────────────────── */
+    #achievements { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .ach-item {
+      padding: 3.5rem 2rem;
+      border-right: 1px solid var(--line);
+      transition: background 0.35s;
+      position: relative; overflow: hidden;
+    }
+    .ach-item:last-child { border-right: none; }
+    .ach-item::after {
+      content:'';
+      position:absolute; bottom:0; left:0; width:0; height:2px;
+      background: var(--ink);
+      transition: width 0.5s ease;
+    }
+    .ach-item:hover::after { width:100%; }
+    .ach-item:hover { background: var(--paper); }
+    .ach-num {
+      font-family: var(--font-disp);
+      font-size: clamp(3rem, 5vw, 4.5rem);
+      color: var(--ink);
+      line-height: 1;
+    }
+    .ach-unit {
+      font-family: var(--font-mono);
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      color: var(--subtle);
+    }
+    .ach-label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--subtle);
+      margin-top: 0.75rem;
+    }
+
+    /* ─── VISION SECTION ────────────────────────────────────── */
+    #vision { background: var(--paper); }
+    .vision-card {
+      padding: 2.5rem 2rem;
+      border: 1px solid var(--line);
+      background: #fff;
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+    .vision-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(15,23,42,0.07); }
+    .vision-marker {
+      font-family: var(--font-disp);
+      font-size: 3rem; color: var(--paper);
+      line-height: 1; margin-bottom: 1.25rem;
+      -webkit-text-stroke: 1px rgba(15,23,42,0.15);
+      text-stroke: 1px rgba(15,23,42,0.15);
+    }
+    .vision-title {
+      font-family: var(--font-ser);
+      font-size: 1.3rem; margin-bottom: 0.75rem;
+    }
+    .vision-desc { font-size: 0.85rem; color: var(--subtle); line-height: 1.8; }
+
+    /* ─── PACKAGES ──────────────────────────────────────────── */
+    .pkg-card {
+      border: 1px solid var(--line);
+      padding: 2.5rem 2rem;
+      position: relative;
+      transition: transform 0.4s, box-shadow 0.4s, border-color 0.4s;
+      background: #fff;
+    }
+    .pkg-card.featured {
+      background: var(--ink); color: #fff;
+      border-color: var(--ink);
+    }
+    .pkg-card:hover:not(.featured) { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(15,23,42,0.08); border-color: var(--ink); }
+    .pkg-card:hover.featured { transform: translateY(-8px); box-shadow: 0 24px 60px rgba(0,0,0,0.25); }
+    .pkg-label {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.3em; text-transform: uppercase;
+    }
+    .pkg-card:not(.featured) .pkg-label { color: var(--subtle); }
+    .pkg-card.featured .pkg-label { color: rgba(255,255,255,0.4); }
+    .pkg-name {
+      font-family: var(--font-disp);
+      font-size: 2.5rem; letter-spacing: 0.05em;
+      margin: 0.5rem 0;
+    }
+    .pkg-card:not(.featured) .pkg-name { color: var(--ink); }
+    .pkg-card.featured .pkg-name { color: #fff; }
+    .pkg-price {
+      font-family: var(--font-disp);
+      font-size: clamp(2rem, 4vw, 3rem);
+    }
+    .pkg-card:not(.featured) .pkg-price { color: var(--ink); }
+    .pkg-card.featured .pkg-price { color: #fff; }
+    .pkg-currency {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      vertical-align: super;
+      opacity: 0.5;
+    }
+    .pkg-divider { height:1px; margin: 1.5rem 0; }
+    .pkg-card:not(.featured) .pkg-divider { background: var(--line); }
+    .pkg-card.featured .pkg-divider { background: rgba(255,255,255,0.12); }
+    .pkg-item {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.83rem; margin-bottom: 0.75rem;
+    }
+    .pkg-card:not(.featured) .pkg-item { color: var(--subtle); }
+    .pkg-card.featured .pkg-item { color: rgba(255,255,255,0.65); }
+    .pkg-check { color: var(--ink); font-size: 0.7rem; margin-top: 3px; flex-shrink: 0; }
+    .pkg-card.featured .pkg-check { color: #fff; }
+    .btn-pkg {
+      display: block; width: 100%;
+      padding: 0.9rem; text-align: center;
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      border-radius: 1px; cursor: pointer;
+      transition: all 0.3s; margin-top: 2rem;
+    }
+    .btn-pkg-dark {
+      background: var(--ink); color: #fff;
+      border: 1px solid var(--ink);
+    }
+    .btn-pkg-dark:hover { background: transparent; color: var(--ink); }
+    .btn-pkg-light {
+      background: #fff; color: var(--ink);
+      border: 1px solid #fff;
+    }
+    .btn-pkg-light:hover { background: transparent; color: #fff; }
+    .pkg-badge {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      font-family: var(--font-mono); font-size: 0.52rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      padding: 0.25rem 0.65rem;
+      background: rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7);
+      border-radius: 1px;
+    }
+
+    /* ─── MASONRY GALLERY ───────────────────────────────────── */
+    #gallery { background: var(--ink); }
+    .gal-filter-btn {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      padding: 0.5rem 1.2rem;
+      background: transparent; color: rgba(255,255,255,0.4);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 1px; cursor: pointer;
+      transition: all 0.3s;
+    }
+    .gal-filter-btn.on, .gal-filter-btn:hover {
+      background: #fff; color: var(--ink);
+      border-color: #fff;
+    }
+
+    /* CSS columns masonry */
+    .masonry-grid {
+      column-count: 3; column-gap: 12px;
+    }
+    @media (max-width:900px) { .masonry-grid { column-count: 2; } }
+    @media (max-width:560px) { .masonry-grid { column-count: 1; } }
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 12px;
+      position: relative; overflow: hidden;
+      cursor: pointer;
+    }
+    .masonry-item.hide { display: none; }
+    .masonry-item img {
+      display: block; width: 100%;
+      filter: grayscale(100%);
+      transition: filter 0.5s ease, transform 0.6s ease;
+    }
+    .masonry-item:hover img {
+      filter: grayscale(0%);
+      transform: scale(1.04);
+    }
+    .masonry-cap {
+      position: absolute; inset:0;
+      background: rgba(0,0,0,0.55);
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 1.25rem;
+      opacity:0; transition: opacity 0.4s;
+    }
+    .masonry-item:hover .masonry-cap { opacity:1; }
+    .masonry-cap-label {
+      font-family: var(--font-mono); font-size: 0.55rem;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      color: rgba(255,255,255,0.5); margin-bottom: 0.25rem;
+    }
+    .masonry-cap-title {
+      font-family: var(--font-ser);
+      font-size: 1.1rem; font-style: italic;
+      color: #fff;
+    }
+
+    /* Lightbox */
+    #lightbox {
+      position: fixed; inset:0; z-index:5000;
+      background: rgba(0,0,0,0.95);
+      display: flex; align-items: center; justify-content: center;
+      opacity:0; visibility:hidden;
+      transition: opacity 0.4s, visibility 0.4s;
+    }
+    #lightbox.open { opacity:1; visibility:visible; }
+    #lightbox img {
+      max-width: 90vw; max-height: 90vh;
+      object-fit: contain;
+      transform: scale(0.9);
+      transition: transform 0.4s;
+    }
+    #lightbox.open img { transform: scale(1); }
+    .lb-close {
+      position: absolute; top: 1.5rem; right: 2rem;
+      font-size: 1.5rem; color: rgba(255,255,255,0.5);
+      cursor: pointer; transition: color 0.2s;
+    }
+    .lb-close:hover { color: #fff; }
+
+    /* ─── TESTIMONIALS ──────────────────────────────────────── */
+    #testimonials { background: var(--paper); }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    @media (max-width:768px) {
+      .testi-grid { grid-template-columns: 1fr; }
+    }
+    .testi-cell {
+      background: var(--paper);
+      padding: 3rem 2.5rem;
+      transition: background 0.3s;
+    }
+    .testi-cell:hover { background: #fff; }
+    .testi-stars { letter-spacing: 0.05em; font-size: 0.75rem; color: var(--ink); margin-bottom: 1.5rem; }
+    .testi-text {
+      font-family: var(--font-ser);
+      font-style: italic;
+      font-size: clamp(1rem, 1.5vw, 1.15rem);
+      line-height: 1.75; color: var(--text);
+      margin-bottom: 2rem;
+    }
+    .testi-name {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--ink);
+    }
+    .testi-role {
+      font-size: 0.75rem; color: var(--subtle);
+      margin-top: 0.2rem;
+    }
+
+    /* ─── PHILOSOPHY ────────────────────────────────────────── */
+    #philosophy {
+      background: var(--ink);
+      position: relative; overflow: hidden;
+    }
+    .phil-step {
+      display: flex; gap: 2rem;
+      padding: 2rem 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      transition: padding-left 0.3s;
+    }
+    .phil-step:hover { padding-left: 1rem; }
+    .phil-step:last-child { border-bottom: none; }
+    .phil-num {
+      font-family: var(--font-disp);
+      font-size: 3.5rem; line-height: 1;
+      color: rgba(255,255,255,0.06);
+      flex-shrink: 0; width: 80px;
+      transition: color 0.3s;
+    }
+    .phil-step:hover .phil-num { color: rgba(255,255,255,0.15); }
+    .phil-step-title {
+      font-family: var(--font-disp);
+      font-size: 1.7rem; letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 0.5rem;
+      transition: color 0.3s;
+    }
+    .phil-step:hover .phil-step-title { color: #fff; }
+    .phil-step-desc {
+      font-size: 0.84rem; color: rgba(255,255,255,0.3);
+      line-height: 1.8;
+    }
+
+    /* ─── BOOKING ────────────────────────────────────────────── */
+    .f-label {
+      font-family: var(--font-mono); font-size: 0.58rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--subtle); display: block; margin-bottom: 0.5rem;
+    }
+    .f-input, .f-select, .f-textarea {
+      width: 100%; font-family: var(--font-body); font-size: 0.9rem;
+      padding: 0.85rem 1rem;
+      background: #fff; color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 1px; outline: none;
+      transition: border-color 0.3s;
+    }
+    .f-input:focus, .f-select:focus, .f-textarea:focus {
+      border-color: var(--ink);
+    }
+    .f-select {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2364748B' stroke-width='1.2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+    .f-textarea { resize: vertical; min-height: 100px; }
+    .btn-submit {
+      width: 100%; padding: 1.1rem;
+      background: var(--ink); color: #fff;
+      font-family: var(--font-mono); font-size: 0.62rem;
+      letter-spacing: 0.3em; text-transform: uppercase;
+      border: 1px solid var(--ink); border-radius: 1px;
+      cursor: pointer; transition: all 0.3s;
+      display: flex; align-items: center; justify-content: center; gap: 0.75rem;
+    }
+    .btn-submit:hover { background: transparent; color: var(--ink); }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    footer { background: var(--ink); }
+    .foot-link {
+      font-family: var(--font-mono); font-size: 0.6rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none; transition: color 0.25s;
+    }
+    .foot-link:hover { color: #fff; }
+    .foot-social {
+      width: 36px; height: 36px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,0.3); font-size: 0.82rem;
+      text-decoration: none;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .foot-social:hover { border-color: rgba(255,255,255,0.5); color: #fff; }
+
+    /* ─── FLOATING CTAS ─────────────────────────────────────── */
+    .float-btn {
+      position: fixed; right: 1.5rem; z-index: 400;
+      width: 48px; height: 48px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: #fff;
+      text-decoration: none;
+      opacity: 0; transform: scale(0);
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .float-btn:hover { transform: scale(1.12); }
+    #fwa { bottom: 5rem; background: #25D366; animation-delay: 0.6s; box-shadow: 0 6px 20px rgba(37,211,102,0.3); }
+    #fig { bottom: 9.5rem; background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%); animation-delay: 0.8s; box-shadow: 0 6px 20px rgba(214,36,159,0.25); }
+    @keyframes popIn { to { opacity:1; transform:scale(1); } }
+    #fwa::before {
+      content:''; position:absolute; inset:-7px; border-radius:50%;
+      border: 1px solid #25D366;
+      animation: waRing 2.2s ease-out infinite;
+    }
+    @keyframes waRing { 0%{transform:scale(.9);opacity:.7} 100%{transform:scale(1.55);opacity:0} }
+
+    /* ─── SCROLL REVEALS ─────────────────────────────────────── */
+    .rv {
+      opacity:0; transform:translateY(36px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .rv-left  { transform: translateX(-40px); }
+    .rv-right { transform: translateX(40px); }
+    .rv.in { opacity:1; transform:translate(0,0); }
+    .rv-d1 { transition-delay: 0.1s; }
+    .rv-d2 { transition-delay: 0.2s; }
+    .rv-d3 { transition-delay: 0.3s; }
+    .rv-d4 { transition-delay: 0.4s; }
+    .rv-d5 { transition-delay: 0.5s; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--ink); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE LOADER
+     ═══════════════════════════════════════════════════════════ -->
+<div id="loader">
+  <div class="loader-name">[STUDIO_NAME]</div>
+  <div class="loader-sub" data-en="Visual Atelier · [CITY]" data-id="Atelier Visual · [CITY]">Visual Atelier · [CITY]</div>
+  <div class="loader-track"><div class="loader-fill"></div></div>
+</div>
+
+<!-- Custom Cursor -->
+<div id="c-dot" aria-hidden="true"></div>
+<div id="c-ring" aria-hidden="true"></div>
+
+<!-- Lightbox -->
+<div id="lightbox" aria-label="Image viewer" role="dialog">
+  <span class="lb-close" onclick="closeLB()" aria-label="Close">&times;</span>
+  <img id="lb-img" src="" alt="Gallery image" />
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MOBILE MENU
+     ═══════════════════════════════════════════════════════════ -->
+<div id="mob-menu" aria-hidden="true">
+  <a href="#portfolio" class="mob-link" data-en="Portfolio" data-id="Portofolio" onclick="closeMob()">Portfolio</a>
+  <a href="#packages"  class="mob-link" data-en="Packages"  data-id="Paket"      onclick="closeMob()">Packages</a>
+  <a href="#gallery"   class="mob-link" data-en="Gallery"   data-id="Galeri"     onclick="closeMob()">Gallery</a>
+  <a href="#booking"   class="mob-link" data-en="Book Now"  data-id="Reservasi"  onclick="closeMob()">Book Now</a>
+  <div style="display:flex; gap:0.5rem; margin-top:1rem;">
+    <button class="lang-pill on" id="mob-en" onclick="setLang('en'); closeMob()">EN</button>
+    <button class="lang-pill"    id="mob-id" onclick="setLang('id'); closeMob()">ID</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     NAVBAR
+     ═══════════════════════════════════════════════════════════ -->
+<nav id="nav">
+  <!-- Logo -->
+  <a href="#" class="nav-logo">[STUDIO_NAME]</a>
+
+  <!-- Desktop Links -->
+  <div style="display:flex; align-items:center; gap:2.5rem;" class="hidden lg:flex">
+    <a href="#vision"      class="nav-link" data-en="Vision"    data-id="Visi">Vision</a>
+    <a href="#packages"    class="nav-link" data-en="Packages"  data-id="Paket">Packages</a>
+    <a href="#gallery"     class="nav-link" data-en="Gallery"   data-id="Galeri">Gallery</a>
+    <a href="#testimonials" class="nav-link" data-en="Reviews"  data-id="Ulasan">Reviews</a>
+  </div>
+
+  <!-- Right -->
+  <div style="display:flex; align-items:center; gap:0.75rem;" class="hidden lg:flex">
+    <div style="display:flex; gap:3px;">
+      <button class="lang-pill on" id="nav-en" onclick="setLang('en')">EN</button>
+      <button class="lang-pill"    id="nav-id" onclick="setLang('id')">ID</button>
+    </div>
+    <a href="#booking" class="btn-book">
+      <span data-en="Book a Session" data-id="Buat Sesi">Book a Session</span>
+      <i class="fa-solid fa-arrow-right" style="font-size:0.6rem;"></i>
+    </a>
+  </div>
+
+  <!-- Mobile Hamburger -->
+  <div class="ham flex lg:hidden" id="ham" onclick="toggleMob()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════
+     HERO — SPLIT SCREEN
+     ═══════════════════════════════════════════════════════════ -->
+<section id="hero">
+
+  <!-- LEFT: Statement Text -->
+  <div class="hero-text-side">
+    <div class="hero-num">01 / INTRO</div>
+
+    <h1 class="hero-headline">
+      <span data-en="FRAME" data-id="BINGKAI">FRAME</span><br>
+      <em data-en="every emotion" data-id="setiap emosi">every emotion</em><br>
+      <span data-en="FOREVER" data-id="SELAMANYA">FOREVER</span>
+    </h1>
+
+    <p class="hero-desc"
+       data-en="[STUDIO_NAME] is a visual atelier dedicated to translating raw human emotion into timeless photographic art. Based in [CITY]."
+       data-id="[STUDIO_NAME] adalah atelier visual yang mendedikasikan diri untuk menerjemahkan emosi manusia ke dalam seni fotografi abadi. Berlokasi di [CITY].">
+      [STUDIO_NAME] is a visual atelier dedicated to translating raw human emotion into timeless photographic art. Based in [CITY].
+    </p>
+
+    <div class="hero-cta-row">
+      <a href="#gallery" class="btn-light">
+        <i class="fa-regular fa-images" style="font-size:0.7rem;"></i>
+        <span data-en="View Portfolio" data-id="Lihat Portofolio">View Portfolio</span>
+      </a>
+      <a href="#booking" class="btn-ghost">
+        <span data-en="Book Session" data-id="Buat Sesi">Book Session</span>
+      </a>
+    </div>
+
+    <div class="scroll-hint">
+      <div class="scroll-line"></div>
+      <span data-en="Scroll" data-id="Gulir">Scroll</span>
+    </div>
+  </div>
+
+  <!-- RIGHT: Hero Image -->
+  <!-- ═══════════════════════════════════════════════════════
+       HERO IMAGE — Replace URL below with your studio's hero shot
+       ═══════════════════════════════════════════════════════ -->
+  <div class="hero-img-side">
+    <img src="https://images.unsplash.com/photo-1524863479829-916d8e77f114?w=1200&q=85"
+         alt="[STUDIO_NAME] hero" loading="eager" />
+    <div class="hero-img-overlay"></div>
+    <div class="hero-img-tag">[STUDIO_NAME] · [CITY]</div>
+  </div>
+
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ACHIEVEMENT GRID
+     ═══════════════════════════════════════════════════════════ -->
+<section id="achievements">
+  <div class="grid grid-cols-2 lg:grid-cols-4">
+
+    <div class="ach-item rv">
+      <div class="ach-num"><span class="cnt" data-t="3200">0</span></div>
+      <div class="ach-unit">+</div>
+      <div class="ach-label" data-en="Moments Captured" data-id="Momen Diabadikan">Moments Captured</div>
+    </div>
+
+    <div class="ach-item rv rv-d1">
+      <div class="ach-num"><span class="cnt" data-t="840">0</span></div>
+      <div class="ach-unit">+</div>
+      <div class="ach-label" data-en="Happy Souls" data-id="Jiwa Bahagia">Happy Souls</div>
+    </div>
+
+    <div class="ach-item rv rv-d2">
+      <div class="ach-num"><span class="cnt" data-t="9">0</span></div>
+      <div class="ach-unit">yrs</div>
+      <div class="ach-label" data-en="Years of Vision" data-id="Tahun Pengalaman">Years of Vision</div>
+    </div>
+
+    <div class="ach-item rv rv-d3">
+      <div class="ach-num"><span class="cnt" data-t="24">0</span></div>
+      <div class="ach-unit">×</div>
+      <div class="ach-label" data-en="Industry Awards" data-id="Penghargaan Industri">Industry Awards</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     THE VISION — WHY US
+     ═══════════════════════════════════════════════════════════ -->
+<section id="vision" class="py-28 lg:py-40">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+
+    <!-- Header -->
+    <div class="grid lg:grid-cols-2 gap-16 items-end mb-20">
+      <div>
+        <p class="sec-label rv" data-en="02 / Our Vision" data-id="02 / Visi Kami">02 / Our Vision</p>
+        <div class="rule mt-4 mb-5 rv rv-d1"></div>
+        <h2 class="sec-title rv rv-d2">
+          <span data-en="TECHNICAL" data-id="PRESISI">TECHNICAL</span><br>
+          <span class="sec-serif" data-en="precision meets" data-id="bertemu jiwa">precision meets</span><br>
+          <span data-en="ARTISTIC SOUL" data-id="ARTISTIK">ARTISTIC SOUL</span>
+        </h2>
+      </div>
+      <p class="text-subtle text-sm leading-relaxed rv rv-right"
+         data-en="We don't just photograph; we architect visual narratives. Every assignment begins with understanding the soul of the moment, then engineering the perfect conditions to capture it in its purest form."
+         data-id="Kami tidak sekadar memotret; kami merancang narasi visual. Setiap penugasan dimulai dengan memahami jiwa momen tersebut, lalu merekayasa kondisi sempurna untuk mengabadikannya dalam bentuk paling murni.">
+        We don't just photograph; we architect visual narratives. Every assignment begins with understanding the soul of the moment, then engineering the perfect conditions to capture it in its purest form.
+      </p>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <div class="vision-card rv">
+        <div class="vision-marker">01</div>
+        <h3 class="vision-title" data-en="Light Architecture" data-id="Arsitektur Cahaya">Light Architecture</h3>
+        <p class="vision-desc"
+           data-en="Natural and studio lighting mastered to sculpt dimension, mood, and texture in every frame."
+           data-id="Cahaya alami dan studio dikuasai untuk memahat dimensi, suasana, dan tekstur di setiap bingkai.">
+          Natural and studio lighting mastered to sculpt dimension, mood, and texture in every frame.
+        </p>
+      </div>
+
+      <div class="vision-card rv rv-d2">
+        <div class="vision-marker">02</div>
+        <h3 class="vision-title" data-en="Narrative Direction" data-id="Arahan Naratif">Narrative Direction</h3>
+        <p class="vision-desc"
+           data-en="We guide subjects through authentic emotion — real laughter, quiet tenderness, unposed truth."
+           data-id="Kami mengarahkan subjek melalui emosi autentik — tawa nyata, kelembutan tenang, kebenaran tanpa pose.">
+          We guide subjects through authentic emotion — real laughter, quiet tenderness, unposed truth.
+        </p>
+      </div>
+
+      <div class="vision-card rv rv-d3">
+        <div class="vision-marker">03</div>
+        <h3 class="vision-title" data-en="Post-Production Mastery" data-id="Pasca-Produksi">Post-Production Mastery</h3>
+        <p class="vision-desc"
+           data-en="Grade A color science and retouching that enhances without erasing what makes you, you."
+           data-id="Ilmu warna Kelas A dan retouching yang menonjolkan tanpa menghapus apa yang membuat Anda, Anda.">
+          Grade A color science and retouching that enhances without erasing what makes you, you.
+        </p>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SESSION PACKAGES — PRICING
+     ═══════════════════════════════════════════════════════════ -->
+<section id="packages" style="background:var(--paper);" class="py-28 lg:py-40">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+
+    <div class="text-center mb-16">
+      <p class="sec-label rv" data-en="03 / Packages" data-id="03 / Paket">03 / Packages</p>
+      <div class="rule mx-auto mt-4 mb-5 rv rv-d1"></div>
+      <h2 class="sec-title rv rv-d2"
+          data-en="SESSION PACKAGES" data-id="PAKET SESI">SESSION PACKAGES</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- ═══ Package 1 ═══════════════════════════════════════
+           Edit name, price, and included items below
+           ═══════════════════════════════════════════════════ -->
+      <div class="pkg-card rv">
+        <div class="pkg-label" data-en="Essential" data-id="Dasar">Essential</div>
+        <div class="pkg-name" data-en="SILVER" data-id="SILVER">SILVER</div>
+        <div class="pkg-price">
+          <span class="pkg-currency">IDR </span>[PRICE_1]
+        </div>
+        <div class="pkg-divider"></div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="[DURATION_1] shooting session" data-id="Sesi pemotretan [DURASI_1]">[DURATION_1] shooting session</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="[QTY_1] edited photos" data-id="[QTY_1] foto diedit">[QTY_1] edited photos</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="1 location" data-id="1 lokasi">1 location</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Online gallery delivery" data-id="Pengiriman galeri online">Online gallery delivery</span>
+        </div>
+        <div class="pkg-item" style="opacity:0.3;">
+          <i class="fa-solid fa-times pkg-check" style="color:var(--subtle);"></i>
+          <span data-en="Print package" data-id="Paket cetak">Print package</span>
+        </div>
+        <button class="btn-pkg btn-pkg-dark"
+                data-pkg="Silver — IDR [PRICE_1]"
+                onclick="selectPkg('Silver', 'IDR [PRICE_1]')"
+                data-en="Select Silver" data-id="Pilih Silver">Select Silver</button>
+      </div>
+
+      <!-- Package 2 — FEATURED -->
+      <div class="pkg-card featured rv rv-d2">
+        <div class="pkg-badge" data-en="Most Popular" data-id="Terpopuler">Most Popular</div>
+        <div class="pkg-label" data-en="Signature" data-id="Unggulan">Signature</div>
+        <div class="pkg-name">GOLD</div>
+        <div class="pkg-price">
+          <span class="pkg-currency">IDR </span>[PRICE_2]
+        </div>
+        <div class="pkg-divider"></div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="[DURATION_2] shooting session" data-id="Sesi pemotretan [DURASI_2]">[DURATION_2] shooting session</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="[QTY_2] edited photos" data-id="[QTY_2] foto diedit">[QTY_2] edited photos</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Up to 2 locations" data-id="Hingga 2 lokasi">Up to 2 locations</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Online gallery + USB delivery" data-id="Galeri online + pengiriman USB">Online gallery + USB delivery</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="10 printed photos (10R)" data-id="10 foto cetak (10R)">10 printed photos (10R)</span>
+        </div>
+        <button class="btn-pkg btn-pkg-light"
+                onclick="selectPkg('Gold', 'IDR [PRICE_2]')"
+                data-en="Select Gold" data-id="Pilih Gold">Select Gold</button>
+      </div>
+
+      <!-- Package 3 -->
+      <div class="pkg-card rv rv-d3">
+        <div class="pkg-label" data-en="Premium" data-id="Premium">Premium</div>
+        <div class="pkg-name" data-en="PLATINUM" data-id="PLATINUM">PLATINUM</div>
+        <div class="pkg-price">
+          <span class="pkg-currency">IDR </span>[PRICE_3]
+        </div>
+        <div class="pkg-divider"></div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="[DURATION_3] full-day session" data-id="Sesi penuh [DURASI_3]">[DURATION_3] full-day session</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Unlimited edited photos" data-id="Foto diedit tanpa batas">Unlimited edited photos</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Unlimited locations" data-id="Lokasi tidak terbatas">Unlimited locations</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Premium album + USB" data-id="Album premium + USB">Premium album + USB</span>
+        </div>
+        <div class="pkg-item">
+          <i class="fa-solid fa-check pkg-check"></i>
+          <span data-en="Dedicated assistant + BTS" data-id="Asisten khusus + BTS">Dedicated assistant + BTS</span>
+        </div>
+        <button class="btn-pkg btn-pkg-dark"
+                onclick="selectPkg('Platinum', 'IDR [PRICE_3]')"
+                data-en="Select Platinum" data-id="Pilih Platinum">Select Platinum</button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MASONRY GALLERY
+     ═══════════════════════════════════════════════════════════ -->
+<section id="gallery" class="py-28 lg:py-36">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-12 gap-8">
+      <div>
+        <p class="sec-label rv" style="color:rgba(255,255,255,0.3);" data-en="04 / Portfolio" data-id="04 / Portofolio">04 / Portfolio</p>
+        <div class="rule rule-white mt-4 mb-5 rv rv-d1"></div>
+        <h2 class="sec-title sec-title-white rv rv-d2"
+            data-en="THE WORK" data-id="KARYA KAMI">THE WORK</h2>
+      </div>
+      <!-- Filter -->
+      <div class="flex flex-wrap gap-2 rv rv-right">
+        <button class="gal-filter-btn on" data-f="all"        data-en="All"        data-id="Semua">All</button>
+        <button class="gal-filter-btn"    data-f="wedding"    data-en="Wedding"    data-id="Pernikahan">Wedding</button>
+        <button class="gal-filter-btn"    data-f="graduation" data-en="Graduation" data-id="Wisuda">Graduation</button>
+        <button class="gal-filter-btn"    data-f="portrait"   data-en="Portrait"   data-id="Potret">Portrait</button>
+        <button class="gal-filter-btn"    data-f="commercial" data-en="Commercial" data-id="Komersial">Commercial</button>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         GALLERY ITEMS
+         Replace src URLs with your own portfolio images
+         data-cat: wedding | graduation | portrait | commercial
+         data-title: caption shown on hover
+         ═══════════════════════════════════════════════════ -->
+    <div class="masonry-grid" id="mas-grid">
+
+      <div class="masonry-item rv" data-cat="wedding" data-title="Golden Hour Vows" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=800&q=80" alt="Wedding" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Wedding" data-id="Pernikahan">Wedding</div>
+          <div class="masonry-cap-title">Golden Hour Vows</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv rv-d1" data-cat="portrait" data-title="Still Waters" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80" alt="Portrait" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Portrait" data-id="Potret">Portrait</div>
+          <div class="masonry-cap-title">Still Waters</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv rv-d2" data-cat="graduation" data-title="The First Chapter" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&q=80" alt="Graduation" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Graduation" data-id="Wisuda">Graduation</div>
+          <div class="masonry-cap-title">The First Chapter</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv" data-cat="commercial" data-title="Product Aesthetics" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Commercial" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Commercial" data-id="Komersial">Commercial</div>
+          <div class="masonry-cap-title">Product Aesthetics</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv rv-d1" data-cat="wedding" data-title="The Quiet Promise" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=800&q=80" alt="Wedding" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Wedding" data-id="Pernikahan">Wedding</div>
+          <div class="masonry-cap-title">The Quiet Promise</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv rv-d2" data-cat="portrait" data-title="Urban Solitude" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1552374196-c4e7ffc6e126?w=800&q=80" alt="Portrait" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Portrait" data-id="Potret">Portrait</div>
+          <div class="masonry-cap-title">Urban Solitude</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv" data-cat="graduation" data-title="Milestone Morning" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?w=800&q=80" alt="Graduation" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Graduation" data-id="Wisuda">Graduation</div>
+          <div class="masonry-cap-title">Milestone Morning</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv rv-d1" data-cat="commercial" data-title="Brand Soul" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=800&q=80" alt="Commercial" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Commercial" data-id="Komersial">Commercial</div>
+          <div class="masonry-cap-title">Brand Soul</div>
+        </div>
+      </div>
+
+      <div class="masonry-item rv rv-d2" data-cat="portrait" data-title="The In-Between" onclick="openLB(this)">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80" alt="Portrait" loading="lazy" />
+        <div class="masonry-cap">
+          <div class="masonry-cap-label" data-en="Portrait" data-id="Potret">Portrait</div>
+          <div class="masonry-cap-title">The In-Between</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     TESTIMONIALS
+     ═══════════════════════════════════════════════════════════ -->
+<section id="testimonials" class="py-28 lg:py-36">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between mb-14 gap-6">
+      <div>
+        <p class="sec-label rv" data-en="05 / Client Voices" data-id="05 / Suara Klien">05 / Client Voices</p>
+        <div class="rule mt-4 mb-5 rv rv-d1"></div>
+        <h2 class="sec-title rv rv-d2" data-en="WHAT THEY SAY" data-id="APA KATA MEREKA">WHAT THEY SAY</h2>
+      </div>
+      <div class="sec-serif rv rv-right"
+           data-en="Words from those we've had the privilege to photograph."
+           data-id="Kata-kata dari mereka yang telah kami potret.">
+        Words from those we've had the privilege to photograph.
+      </div>
+    </div>
+
+    <div class="testi-grid">
+
+      <!-- ═════════════════════════════════════════════════
+           TESTIMONIALS — Edit text, name, and role
+           ═════════════════════════════════════════════════ -->
+      <div class="testi-cell rv">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text"
+           data-en="[TESTIMONIAL_1_EN]"
+           data-id="[TESTIMONIAL_1_ID]">
+          "Working with [STUDIO_NAME] was transformative. They saw something in our wedding day that we couldn't have imagined, and now those images live in our home forever."
+        </p>
+        <div>
+          <div class="testi-name">[CLIENT_1]</div>
+          <div class="testi-role" data-en="Wedding Client · [CITY]" data-id="Klien Pernikahan · [CITY]">Wedding Client · [CITY]</div>
+        </div>
+      </div>
+
+      <div class="testi-cell rv rv-d2">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text"
+           data-en="[TESTIMONIAL_2_EN]"
+           data-id="[TESTIMONIAL_2_ID]">
+          "The attention to light, composition, and emotion is unparalleled. My graduation photos don't just show a moment — they tell the entire story of four years."
+        </p>
+        <div>
+          <div class="testi-name">[CLIENT_2]</div>
+          <div class="testi-role" data-en="Graduation Client · Jakarta" data-id="Klien Wisuda · Jakarta">Graduation Client · Jakarta</div>
+        </div>
+      </div>
+
+      <div class="testi-cell rv rv-d3">
+        <div class="testi-stars">★★★★★</div>
+        <p class="testi-text"
+           data-en="[TESTIMONIAL_3_EN]"
+           data-id="[TESTIMONIAL_3_ID]">
+          "Our brand campaign required a photographer who understood both art direction and commercial outcomes. [STUDIO_NAME] delivered on every dimension."
+        </p>
+        <div>
+          <div class="testi-name">[CLIENT_3]</div>
+          <div class="testi-role" data-en="Commercial Client · Surabaya" data-id="Klien Komersial · Surabaya">Commercial Client · Surabaya</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BEHIND THE LENS — PHILOSOPHY
+     ═══════════════════════════════════════════════════════════ -->
+<section id="philosophy" class="py-28 lg:py-40">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+
+    <div class="grid lg:grid-cols-2 gap-20 items-start">
+
+      <!-- Left sticky label -->
+      <div class="lg:sticky lg:top-28">
+        <p class="sec-label rv" style="color:rgba(255,255,255,0.3);"
+           data-en="06 / Process" data-id="06 / Proses">06 / Process</p>
+        <div class="rule rule-white mt-4 mb-5 rv rv-d1"></div>
+        <h2 class="sec-title sec-title-white rv rv-d2"
+            data-en="BEHIND THE LENS" data-id="DI BALIK LENSA">BEHIND THE<br>LENS</h2>
+        <p class="mt-6 rv rv-d3"
+           style="font-size:0.85rem; color:rgba(255,255,255,0.3); line-height:1.8; max-width:320px;"
+           data-en="A transparent look at how we create the images our clients treasure forever."
+           data-id="Pandangan transparan tentang bagaimana kami menciptakan gambar yang dihargai klien selamanya.">
+          A transparent look at how we create the images our clients treasure forever.
+        </p>
+      </div>
+
+      <!-- Right: Steps -->
+      <div class="rv rv-right">
+
+        <div class="phil-step">
+          <div class="phil-num">01</div>
+          <div>
+            <div class="phil-step-title" data-en="DISCOVERY CALL" data-id="KONSULTASI AWAL">DISCOVERY CALL</div>
+            <div class="phil-step-desc"
+                 data-en="A 30-minute conversation where we learn your vision, mood reference, and the story you want told."
+                 data-id="Percakapan 30 menit di mana kami mempelajari visi, referensi suasana, dan cerita yang ingin Anda sampaikan.">
+              A 30-minute conversation where we learn your vision, mood reference, and the story you want told.
+            </div>
+          </div>
+        </div>
+
+        <div class="phil-step">
+          <div class="phil-num">02</div>
+          <div>
+            <div class="phil-step-title" data-en="LOCATION SCOUT" data-id="SURVEI LOKASI">LOCATION SCOUT</div>
+            <div class="phil-step-desc"
+                 data-en="We visit and assess every location for its light quality, background depth, and emotional resonance."
+                 data-id="Kami mengunjungi dan mengevaluasi setiap lokasi untuk kualitas cahaya, kedalaman latar, dan resonansi emosionalnya.">
+              We visit and assess every location for its light quality, background depth, and emotional resonance.
+            </div>
+          </div>
+        </div>
+
+        <div class="phil-step">
+          <div class="phil-num">03</div>
+          <div>
+            <div class="phil-step-title" data-en="THE SHOOT" data-id="SESI PEMOTRETAN">THE SHOOT</div>
+            <div class="phil-step-desc"
+                 data-en="Guided, relaxed, and directed with intention. We create conditions for genuine emotion to surface naturally."
+                 data-id="Dipandu, santai, dan diarahkan dengan tujuan. Kami menciptakan kondisi agar emosi tulus muncul secara alami.">
+              Guided, relaxed, and directed with intention. We create conditions for genuine emotion to surface naturally.
+            </div>
+          </div>
+        </div>
+
+        <div class="phil-step">
+          <div class="phil-num">04</div>
+          <div>
+            <div class="phil-step-title" data-en="EDIT & GRADE" data-id="EDIT & GRADING">EDIT & GRADE</div>
+            <div class="phil-step-desc"
+                 data-en="Individual frame-by-frame culling, color science, and retouching to achieve a consistent, cinematic look."
+                 data-id="Pemilihan frame per frame, ilmu warna, dan retouching untuk menghasilkan tampilan sinematik yang konsisten.">
+              Individual frame-by-frame culling, color science, and retouching to achieve a consistent, cinematic look.
+            </div>
+          </div>
+        </div>
+
+        <div class="phil-step">
+          <div class="phil-num">05</div>
+          <div>
+            <div class="phil-step-title" data-en="DELIVERY" data-id="PENGIRIMAN">DELIVERY</div>
+            <div class="phil-step-desc"
+                 data-en="Private online gallery + USB/album delivered within [TURNAROUND] days. A permanent visual legacy, delivered."
+                 data-id="Galeri online pribadi + USB/album dikirimkan dalam [TURNAROUND] hari. Warisan visual permanen, terkirim.">
+              Private online gallery + USB/album delivered within [TURNAROUND] days. A permanent visual legacy, delivered.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     BOOKING ENGINE
+     ═══════════════════════════════════════════════════════════ -->
+<section id="booking" style="background:var(--paper);" class="py-28 lg:py-40">
+  <div class="max-w-6xl mx-auto px-6 lg:px-12">
+
+    <div class="grid lg:grid-cols-2 gap-20 items-start">
+
+      <!-- Info -->
+      <div>
+        <p class="sec-label rv" data-en="07 / Book a Session" data-id="07 / Buat Sesi">07 / Book a Session</p>
+        <div class="rule mt-4 mb-5 rv rv-d1"></div>
+        <h2 class="sec-title rv rv-d2"
+            data-en="LET'S CREATE TOGETHER" data-id="MARI BERKARYA BERSAMA">LET'S CREATE<br>TOGETHER</h2>
+        <p class="mt-6 rv rv-d3"
+           style="font-size:0.85rem; color:var(--subtle); line-height:1.8; max-width:380px;"
+           data-en="Fill in the form and we'll reach out via WhatsApp within [RESPONSE_TIME] hours to confirm your session."
+           data-id="Isi formulir dan kami akan menghubungi via WhatsApp dalam [RESPONSE_TIME] jam untuk mengkonfirmasi sesi Anda.">
+          Fill in the form and we'll reach out via WhatsApp within [RESPONSE_TIME] hours to confirm your session.
+        </p>
+
+        <!-- Studio contact details -->
+        <div class="mt-10 space-y-4 rv rv-d4">
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="width:38px;height:38px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--subtle);flex-shrink:0;">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <span style="font-size:0.85rem; color:var(--subtle);">[STUDIO_ADDRESS]</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="width:38px;height:38px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--subtle);flex-shrink:0;">
+              <i class="fa-brands fa-whatsapp"></i>
+            </div>
+            <span style="font-size:0.85rem; color:var(--subtle);">[WA_NUMBER_DISPLAY]</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:1rem;">
+            <div style="width:38px;height:38px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:0.8rem;color:var(--subtle);flex-shrink:0;">
+              <i class="fa-brands fa-instagram"></i>
+            </div>
+            <a href="https://instagram.com/[IG_HANDLE]" target="_blank" rel="noopener"
+               style="font-size:0.85rem; color:var(--subtle); text-decoration:none;">@[IG_HANDLE]</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="rv rv-right">
+        <div style="background:#fff; border:1px solid var(--line); padding:2.5rem;">
+
+          <div style="margin-bottom:1.25rem;">
+            <label class="f-label" data-en="Full Name" data-id="Nama Lengkap">Full Name</label>
+            <input class="f-input" id="b-name" type="text"
+                   data-en="Your full name" data-id="Nama lengkap Anda"
+                   placeholder="Your full name" required />
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+            <div>
+              <label class="f-label" data-en="WhatsApp No." data-id="No. WhatsApp">WhatsApp No.</label>
+              <input class="f-input" id="b-wa" type="tel" placeholder="+62 8xx..." required />
+            </div>
+            <div>
+              <label class="f-label">Instagram</label>
+              <input class="f-input" id="b-ig" type="text" placeholder="@username" />
+            </div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.25rem;">
+            <div>
+              <label class="f-label" data-en="Session Date" data-id="Tanggal Sesi">Session Date</label>
+              <input class="f-input" id="b-date" type="date" required />
+            </div>
+            <div>
+              <label class="f-label" data-en="Session Type" data-id="Jenis Sesi">Session Type</label>
+              <!-- ═══════════════════════════════════════════
+                   Add or rename session types here
+                   ═══════════════════════════════════════════ -->
+              <select class="f-select" id="b-type" required>
+                <option value=""  data-en="-- Select --"   data-id="-- Pilih --">-- Select --</option>
+                <option value="Wedding"    data-en="Wedding"    data-id="Pernikahan">Wedding</option>
+                <option value="Graduation" data-en="Graduation" data-id="Wisuda">Graduation</option>
+                <option value="Portrait"   data-en="Portrait"   data-id="Potret">Portrait</option>
+                <option value="Commercial" data-en="Commercial" data-id="Komersial">Commercial</option>
+                <option value="Other"      data-en="Other"      data-id="Lainnya">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-bottom:1.25rem;">
+            <label class="f-label" data-en="Package" data-id="Paket">Package</label>
+            <select class="f-select" id="b-pkg" required>
+              <option value=""         data-en="-- Choose package --"  data-id="-- Pilih paket --">-- Choose package --</option>
+              <option value="Silver"   data-en="Silver — IDR [PRICE_1]" data-id="Silver — IDR [PRICE_1]">Silver — IDR [PRICE_1]</option>
+              <option value="Gold"     data-en="Gold — IDR [PRICE_2]"   data-id="Gold — IDR [PRICE_2]">Gold — IDR [PRICE_2]</option>
+              <option value="Platinum" data-en="Platinum — IDR [PRICE_3]" data-id="Platinum — IDR [PRICE_3]">Platinum — IDR [PRICE_3]</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom:1.75rem;">
+            <label class="f-label" data-en="Vision / Notes (optional)" data-id="Visi / Catatan (opsional)">Vision / Notes (optional)</label>
+            <textarea class="f-textarea" id="b-notes"
+                      data-en="Mood references, locations, special requests..."
+                      data-id="Referensi suasana, lokasi, permintaan khusus..."
+                      placeholder="Mood references, locations, special requests..."></textarea>
+          </div>
+
+          <button class="btn-submit" onclick="submitBook()">
+            <i class="fa-brands fa-whatsapp" style="font-size:1rem;"></i>
+            <span data-en="Send to WhatsApp" data-id="Kirim ke WhatsApp">Send to WhatsApp</span>
+          </button>
+
+          <p style="text-align:center; margin-top:1rem; font-family:var(--font-mono); font-size:0.55rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--subtle);"
+             data-en="You'll be redirected to WhatsApp to complete."
+             data-id="Anda akan diarahkan ke WhatsApp untuk melanjutkan.">
+            You'll be redirected to WhatsApp to complete.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════ -->
+<footer class="py-16">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12">
+
+    <div class="grid lg:grid-cols-4 gap-12 mb-14">
+
+      <!-- Brand -->
+      <div class="lg:col-span-2">
+        <div style="font-family:var(--font-disp); font-size:2rem; color:#fff; letter-spacing:0.15em; margin-bottom:1rem;">
+          [STUDIO_NAME]
+        </div>
+        <p style="font-size:0.83rem; color:rgba(255,255,255,0.25); line-height:1.8; max-width:300px;"
+           data-en="Visual Atelier · [CITY], Indonesia · Dedicated to photographic excellence since [YEAR]."
+           data-id="Atelier Visual · [CITY], Indonesia · Berdedikasi pada keunggulan fotografi sejak [YEAR].">
+          Visual Atelier · [CITY], Indonesia · Dedicated to photographic excellence since [YEAR].
+        </p>
+        <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+          <a href="https://instagram.com/[IG_HANDLE]" target="_blank" rel="noopener" class="foot-social">
+            <i class="fa-brands fa-instagram"></i></a>
+          <a href="https://tiktok.com/@[TT_HANDLE]"  target="_blank" rel="noopener" class="foot-social">
+            <i class="fa-brands fa-tiktok"></i></a>
+          <a href="https://wa.me/[WA_NUMBER]"         target="_blank" rel="noopener" class="foot-social">
+            <i class="fa-brands fa-whatsapp"></i></a>
+          <a href="https://youtube.com/@[YT_HANDLE]"  target="_blank" rel="noopener" class="foot-social">
+            <i class="fa-brands fa-youtube"></i></a>
+        </div>
+      </div>
+
+      <!-- Services -->
+      <div>
+        <p style="font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.2); margin-bottom:1.25rem;"
+           data-en="Sessions" data-id="Sesi">Sessions</p>
+        <ul style="space-y:0.75rem; list-style:none; display:flex; flex-direction:column; gap:0.75rem;">
+          <li><a href="#packages" class="foot-link" data-en="Wedding"    data-id="Pernikahan">Wedding</a></li>
+          <li><a href="#packages" class="foot-link" data-en="Graduation" data-id="Wisuda">Graduation</a></li>
+          <li><a href="#packages" class="foot-link" data-en="Portrait"   data-id="Potret">Portrait</a></li>
+          <li><a href="#packages" class="foot-link" data-en="Commercial" data-id="Komersial">Commercial</a></li>
+        </ul>
+      </div>
+
+      <!-- Studio -->
+      <div>
+        <p style="font-family:var(--font-mono); font-size:0.58rem; letter-spacing:0.3em; text-transform:uppercase; color:rgba(255,255,255,0.2); margin-bottom:1.25rem;"
+           data-en="Studio" data-id="Studio">Studio</p>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:0.75rem;">
+          <li style="font-size:0.8rem; color:rgba(255,255,255,0.25);">[STUDIO_ADDRESS]</li>
+          <li><a href="https://wa.me/[WA_NUMBER]" class="foot-link">[WA_NUMBER_DISPLAY]</a></li>
+          <li><a href="mailto:[EMAIL]" class="foot-link">[EMAIL]</a></li>
+          <li style="font-size:0.8rem; color:rgba(255,255,255,0.25);"
+              data-en="[HOURS_EN]" data-id="[HOURS_ID]">[HOURS_EN]</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div style="border-top:1px solid rgba(255,255,255,0.06); padding-top:2rem; display:flex; flex-wrap:wrap; justify-content:space-between; gap:1rem;">
+      <p style="font-family:var(--font-mono); font-size:0.55rem; letter-spacing:0.15em; color:rgba(255,255,255,0.15);">
+        &copy; <span id="yr"></span> [STUDIO_NAME].
+        <span data-en="All rights reserved." data-id="Hak cipta dilindungi.">All rights reserved.</span>
+      </p>
+      <p style="font-family:var(--font-mono); font-size:0.55rem; letter-spacing:0.15em; text-transform:uppercase; color:rgba(255,255,255,0.1);">
+        <span data-en="Crafted in" data-id="Dibuat di">Crafted in</span> [CITY]
+      </p>
+    </div>
+
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FLOATING CTAS
+     ═══════════════════════════════════════════════════════════ -->
+<!-- ═════════════════════════════════════════
+     Replace WA_NUMBER and IG_HANDLE below
+     ═════════════════════════════════════════ -->
+<a id="fwa" class="float-btn"
+   href="https://wa.me/[WA_NUMBER]?text=Halo%20[STUDIO_NAME],%20saya%20ingin%20book%20sesi."
+   target="_blank" rel="noopener" aria-label="WhatsApp">
+  <i class="fa-brands fa-whatsapp" style="font-size:1.2rem;"></i>
+</a>
+<a id="fig" class="float-btn"
+   href="https://instagram.com/[IG_HANDLE]"
+   target="_blank" rel="noopener" aria-label="Instagram">
+  <i class="fa-brands fa-instagram"></i>
+</a>
+
+<!-- ═══════════════════════════════════════════════════════════
+     JAVASCRIPT
+     ═══════════════════════════════════════════════════════════ -->
+<script>
+/* ────────────────────────────────────────────────────────────
+   CONFIG — Set your WhatsApp number (intl format, no + or spaces)
+   Example: '6281234567890'
+   ──────────────────────────────────────────────────────────── */
+const WA = '[WA_NUMBER]';
+
+/* ── Year ─────────────────────────────────────────────────── */
+document.getElementById('yr').textContent = new Date().getFullYear();
+
+/* ── Page Loader ──────────────────────────────────────────── */
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('out'), 2100);
+});
+
+/* ── Custom Cursor ────────────────────────────────────────── */
+const cDot = document.getElementById('c-dot');
+const cRing = document.getElementById('c-ring');
+document.addEventListener('mousemove', e => {
+  cDot.style.left = cRing.style.left = e.clientX + 'px';
+  cDot.style.top  = cRing.style.top  = e.clientY + 'px';
+});
+document.addEventListener('mousedown', () => { cDot.style.transform = 'translate(-50%,-50%) scale(3)'; });
+document.addEventListener('mouseup',   () => { cDot.style.transform = 'translate(-50%,-50%) scale(1)'; });
+// Expand cursor over images/cards
+document.querySelectorAll('.masonry-item, .pkg-card, .vision-card, .testi-cell').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('cursor-img'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-img'));
+});
+
+/* ── Navbar Scroll ────────────────────────────────────────── */
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('solid', scrollY > 60), { passive: true });
+
+/* ── Intersection Observer (scroll reveals) ───────────────── */
+let cntStarted = false;
+const io = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('in');
+      io.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => io.observe(el));
+
+/* ── Counter animation ────────────────────────────────────── */
+const cntObserver = new IntersectionObserver((entries) => {
+  if (!entries[0].isIntersecting || cntStarted) return;
+  cntStarted = true;
+  document.querySelectorAll('.cnt').forEach(el => {
+    const target = +el.dataset.t;
+    let v = 0;
+    const step = target / 60;
+    const tick = () => {
+      v = Math.min(v + step, target);
+      el.textContent = Math.floor(v).toLocaleString();
+      if (v < target) requestAnimationFrame(tick);
+      else el.textContent = target.toLocaleString();
+    };
+    tick();
+  });
+}, { threshold: 0.4 });
+const ach = document.getElementById('achievements');
+if (ach) cntObserver.observe(ach);
+
+/* ── Language Engine ──────────────────────────────────────── */
+let lang = 'en';
+function setLang(l) {
+  lang = l;
+  document.documentElement.setAttribute('data-lang', l);
+  document.querySelectorAll('[data-en][data-id]').forEach(el => {
+    const v = el.getAttribute(`data-${l}`);
+    if (!v) return;
+    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = v;
+    else if (el.tagName === 'OPTION') el.textContent = v;
+    else el.textContent = v;
+  });
+  ['nav-en','nav-id','mob-en','mob-id'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) b.classList.toggle('on', id.endsWith(l));
+  });
+}
+
+/* ── Gallery Filter ───────────────────────────────────────── */
+document.querySelectorAll('.gal-filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.gal-filter-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    const f = btn.dataset.f;
+    document.querySelectorAll('.masonry-item').forEach(item => {
+      const show = f === 'all' || item.dataset.cat === f;
+      item.classList.toggle('hide', !show);
+    });
+  });
+});
+
+/* ── Lightbox ─────────────────────────────────────────────── */
+const lb = document.getElementById('lightbox');
+const lbImg = document.getElementById('lb-img');
+function openLB(el) {
+  const src = el.querySelector('img').src;
+  lbImg.src = src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLB() {
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+lb.addEventListener('click', e => { if (e.target === lb) closeLB(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLB(); });
+
+/* ── Package → Form ───────────────────────────────────────── */
+function selectPkg(name, price) {
+  const sel = document.getElementById('b-pkg');
+  for (let o of sel.options) {
+    if (o.value === name) { o.selected = true; break; }
+  }
+  setTimeout(() => {
+    document.getElementById('booking').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 150);
+}
+
+/* ── Booking → WhatsApp ───────────────────────────────────── */
+function submitBook() {
+  const name  = document.getElementById('b-name').value.trim();
+  const wa    = document.getElementById('b-wa').value.trim();
+  const ig    = document.getElementById('b-ig').value.trim();
+  const date  = document.getElementById('b-date').value;
+  const type  = document.getElementById('b-type').value;
+  const pkg   = document.getElementById('b-pkg').value;
+  const notes = document.getElementById('b-notes').value.trim();
+
+  if (!name || !wa || !date || !type || !pkg) {
+    alert(lang === 'id'
+      ? 'Harap lengkapi semua kolom wajib.'
+      : 'Please fill in all required fields.');
+    return;
+  }
+
+  /* ──────────────────────────────────────────────────────────
+     WA MESSAGE TEMPLATE — Edit the copy below as needed
+     ────────────────────────────────────────────────────────── */
+  const msg = lang === 'id'
+    ? `Halo [STUDIO_NAME] 📸\n\nSaya ingin booking sesi:\n\n👤 *Nama:* ${name}\n📱 *WA:* ${wa}${ig ? `\n📸 *IG:* ${ig}` : ''}\n📅 *Tanggal:* ${date}\n🎯 *Jenis Sesi:* ${type}\n💼 *Paket:* ${pkg}${notes ? `\n📝 *Catatan:* ${notes}` : ''}\n\nMohon konfirmasinya, terima kasih!`
+    : `Hello [STUDIO_NAME] 📸\n\nI'd like to book a session:\n\n👤 *Name:* ${name}\n📱 *WA:* ${wa}${ig ? `\n📸 *IG:* ${ig}` : ''}\n📅 *Date:* ${date}\n🎯 *Session Type:* ${type}\n💼 *Package:* ${pkg}${notes ? `\n📝 *Notes:* ${notes}` : ''}\n\nPlease confirm, thank you!`;
+
+  window.open(`https://wa.me/${WA}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+}
+
+/* ── Mobile Menu ──────────────────────────────────────────── */
+let mobOpen = false;
+function toggleMob() {
+  mobOpen = !mobOpen;
+  document.getElementById('mob-menu').classList.toggle('open', mobOpen);
+  document.getElementById('mob-menu').setAttribute('aria-hidden', String(!mobOpen));
+  document.getElementById('ham').classList.toggle('x', mobOpen);
+}
+function closeMob() {
+  mobOpen = false;
+  document.getElementById('mob-menu').classList.remove('open');
+  document.getElementById('mob-menu').setAttribute('aria-hidden', 'true');
+  document.getElementById('ham').classList.remove('x');
+}
+</script>
+
+</body>
+</html>
